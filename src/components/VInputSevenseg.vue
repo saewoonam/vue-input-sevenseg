@@ -4,7 +4,7 @@
     ref="digits"
     :style="style"
     class="sevenseg"
-    :class="{ resize: resize, focus: focus}"
+    :class="{ resize: resize, focus: focus }"
     tabindex="0"
     @click="mouse"
     @keydown="keydown"
@@ -104,7 +104,7 @@ export default {
       value: 1.2345,
       readonly: false,
       mult: parseFloat(this.step),
-      cursorPosition: 0, // this.digits,
+      screenPosition: this.digits, // location to insert into string/number
       high: false,
       line: "",
       focus: false,
@@ -131,6 +131,14 @@ export default {
           front: "off"
         };
       });
+      // console.log("attributes screenPosition, insertPosition", this.screenPosition, this.insertPosition);
+      if (this.screenPosition >= this.padding) {
+        if (this.screenPosition == this.digits) {
+          colors[this.screenPosition - 1].back = "on";
+        } else {
+          colors[this.screenPosition].front = "on";
+        }
+      }
       return colors;
     },
     style: function() {
@@ -186,6 +194,15 @@ export default {
     },
     numericValue: function() {
       return this.toPrecision(Number(this.value), this.precision);
+    },
+    insertPosition: function() {
+      var pos = this.screenPosition - this.padding;
+      if (pos < 0) pos = 0;
+      if (this.raw.indexOf(".") <= pos && this.raw.indexOf(".") >= 0) {
+        pos++;
+      }
+      // console.log('calc insert screen padding', this.screenPosition, this.padding, pos);
+      return pos;
     }
   },
 
@@ -194,18 +211,21 @@ export default {
     init: {
       immediate: true,
       // handle the changed value
-      handler (val) {
+      handler(val) {
         if (this.value != val) {
-          console.log("watch: copy init to value");
-          this.value = val
+          // console.log("copy init to value");
+          this.value = val;
         }
       }
-    },
+    }
   },
   mounted() {
-    // this.$el.addEventListener("resize", this.handleResize);
+    this.$el.addEventListener("mousewheel", this.handleWheel);
+    this.$el.addEventListener("wheel", this.handleWheel); // for IE
   },
   destroyed() {
+    this.$el.removeEventListener("mousewheel", this.handleWheel);
+    this.$el.removeEventListener("wheel", this.handleWheel); // for IE
     // this.$el.removeEventListener("resize", this.handleResize);
   },
   methods: {
@@ -239,18 +259,14 @@ export default {
      * Increment the current numeric value
      */
     increment() {
-      console.log("increment");
       var step = this.mult * Number(this.step);
       if (!this.readonly)
         this.value = this.toPrecision(this.toNumber(this.value) + step);
-      console.log("increment", typeof step, step);
-      console.log("increment, this.modelValue:", typeof this.value, this.value);
     },
     /**
      * Decrement the current numeric value
      */
     decrement() {
-      console.log("decrement");
       var step = this.mult * Number(this.step);
       if (!this.readonly)
         this.value = this.toPrecision(this.toNumber(this.value) - step);
@@ -258,32 +274,94 @@ export default {
     /**
      *  Handle when the step multier needs to go up x10
      */
-    multUp: function () {
-        this.mult  = parseFloat(this.mult) * 10;
-        // console.log('after '+this.multiplier);
+    multUp: function() {
+      this.mult = parseFloat(this.mult) * 10;
+      // console.log('after '+this.multiplier);
     },
     /**
      *  Handle when the step multier needs to be divided by 10
      */
-    multDown: function () {
-        //  console.log('before '+this.multiplier);
-        this.mult  = parseFloat(this.mult) / 10;
-        if (this.mult*Number(this.step) < 10**(-this.precision)) {
-            // console.log('mult is too small'+10**(-this.precision));
-            this.mult = this.mult * 10;
-            }
-        // console.log('after '+this.multiplier);
+    multDown: function() {
+      //  console.log('before '+this.multiplier);
+      this.mult = parseFloat(this.mult) / 10;
+      if (this.mult * Number(this.step) < 10 ** -this.precision) {
+        // console.log('mult is too small' + 10 ** (-this.precision));
+        this.mult = this.mult * 10;
+      }
+      // console.log('after '+this.multiplier);
     },
     mouse: function(event) {
-      console.log("mouse: ", event);
+      var path = event.path || (event.composedPath && event.composedPath());
+      console.log("mouse: path", path);
+    },
+    /**
+     *  Handle mouse wheel events
+     *  @param {object} event
+     */
+    handleWheel(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.deltaY < 0) {
+        this.decrement();
+      } else if (e.deltaY > 0) {
+        this.increment();
+      }
+      this.handleTimeout(200);
     },
     keydown: function(evt) {
-      console.log("keydown: ", evt);
-      console.log("colors:", this.attributes);
+      // console.log("keydown: ", evt);
+      // console.log("colors:", this.attributes);
       // console.log('keydown evt: ', evt, evt.shiftKey);
       // console.log('element', typeof(evt.target._value))
       // console.log('keydown evt.value: ', evt.value);
-
+      var addTimeout = false;
+      if (evt.code == "ArrowLeft") {
+        if (this.screenPosition > 0 && this.screenPosition > this.padding) {
+          this.screenPosition--;
+        }
+      } else if (evt.code == "ArrowRight") {
+        this.screenPosition++;
+        console.log("ArrowRight", this.raw, this.raw.length);
+        if (this.screenPosition > this.digits) {
+          this.screenPosition--;
+        }
+      } else if (evt.keyCode == 68 && evt.ctrlKey) {
+        if (this.screenPosition >= this.padding) {
+          let temp = this.raw.slice();
+          // console.log('ctrl-d', this.insertPosition, this.screenPosition);
+          temp.splice(this.insertPosition, 1);
+          // console.log('ctrl-d', temp);
+          this.value = parseFloat(temp.join(""));
+          if (this.padding > 0) this.screenPosition += 1;
+          addTimeout = true;
+        }
+      } else if (evt.code == "Backspace") {
+        if (this.screenPosition > this.padding) {
+          let temp = this.raw.slice();
+          // console.log('backspace', this.insertPosition, this.screenPosition);
+          let removed = temp.splice(this.insertPosition - 1, 1);
+          // console.log('backspace', temp);
+          this.value = parseFloat(temp.join(""));
+          if (removed != "." && this.screenPosition > this.padding)
+            this.screenPosition--;
+          addTimeout = true;
+        }
+      }
+      if (
+        (evt.keyCode >= 48 && evt.keyCode <= 57) ||
+        (evt.keyCode >= 96 && evt.keyCode <= 105)
+      ) {
+        let temp = this.raw.slice();
+        temp.splice(this.insertPosition, 0, evt.key);
+        this.value = parseFloat(temp.join(""));
+        addTimeout = true;
+      }
+      if (evt.key == "." && this.raw.indexOf(".") == -1) {
+        let temp = this.raw.slice();
+        temp.splice(this.insertPosition, 0, evt.key);
+        this.value = parseFloat(temp.join(""));
+        addTimeout = true;
+      }
       switch (evt.key) {
         case "ArrowUp":
           if (evt.shiftKey) {
@@ -296,14 +374,14 @@ export default {
           if (evt.shiftKey) this.multDown();
           else this.arrowDown(evt);
           break;
+        case "ArrowLeft":
+          break;
+        case "ArrowRight":
+          break;
         default:
-          // console.log('default', evt.key)
-          if (this.modelValue != this.value) {
-            this.color = "red";
-            this.isBack = true;
-            this.focus = true;
-          }
+          console.log('default', evt.key, evt.keyCode, evt)
       }
+      if (addTimeout) this.handleTimeout(1000);
       // console.log(this.value, typeof(this.value), this.outputValue, typeof(this.outputValue))
     },
     /**
@@ -333,17 +411,17 @@ export default {
      *  @param {Number} delay
      */
     handleTimeout(delay) {
-      this.focus = true
+      this.focus = true;
       clearTimeout(this.timeout);
-      this.timeout = setTimeout( () => {
+      this.timeout = setTimeout(() => {
         this.focus = false;
-        this.$emit('change', this.value)
-        this.lastValid = this.value
+        this.$emit('change', this.value);
+        this.lastValid = this.value;
       }, delay);
     },
     moveCursor: function(evt) {
       console.log("moveCursor not implemented: evt:", evt);
-    },
+    }
   }
 };
 </script>

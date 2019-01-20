@@ -1,33 +1,33 @@
 <template>
   <div>
-  <svg
-    viewBox="0 0 60 80"
-    :style="styleComputed"
-    :value="value"
-    :dp="dp"
-    :slant="slant"
-  >
-    <circle :style="dpStyle" cx="55" cy="75" r="5" />
-    <polyline
-      v-for="(hv, index) in hv_segments"
-      :key="index"
-      :transform="transform(index)"
-      :style="onOff(index)"
-      :points="hv ? hline : vline"
-    />
-    <path
-      id="backcursor"
-      :class="back"
-      :style="'stroke: ' + colorOn"
-      d="M 55 0 L 55 80"
-    />
-    <path
-      id="frontcursor"
-      :class="front"
-      :style="'stroke: ' + colorOn"
-      d="M 0 0 L 0 80"
-    />
-  </svg>
+    <svg
+      viewBox="0 0 60 80"
+      :style="styleComputed"
+      :value="value"
+      :dp="dp"
+      :slant="slant"
+    >
+      <circle :style="dpStyle" cx="55" cy="75" r="5" />
+      <polyline
+        v-for="(hv, index) in hv_segments"
+        :key="index"
+        :transform="transform(index)"
+        :style="onOff(index)"
+        :points="hv ? hline : vline"
+      />
+      <path
+        id="backcursor"
+        :class="back"
+        :style="'stroke: ' + colorOn"
+        d="M 55 0 L 55 80"
+      />
+      <path
+        id="frontcursor"
+        :class="front"
+        :style="'stroke: ' + colorOn"
+        d="M 0 0 L 0 80"
+      />
+    </svg>
   </div>
 </template>
 <script>
@@ -98,6 +98,8 @@ export default {
         E: 0x79,
         f: 0x71,
         F: 0x71,
+        n: 0x54,
+        N: 0x54,
         "-": 0x40,
         _: 0x08,
         "": 0,
