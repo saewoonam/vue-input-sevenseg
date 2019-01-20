@@ -1,17 +1,17 @@
 {
-  "name": "v-sevenseg",
-  "version": "1.0.1",
-  "description": "A vue implementation of a seven segment display inspired by Sevenseg.js from https://github.com/BrandonLWhite/sevenSeg.js",
+  "name": "v-input-sevenseg",
+  "version": "0.0.1",
+  "description": "A vue numeric input using a seven segment display inspired by Sevenseg.js from https://github.com/BrandonLWhite/sevenSeg.js",
   "author": "Sae Woo  Nam",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/saewoonam/vue-sevenseg.git"
+    "url": "https://github.com/saewoonam/vue-input-sevenseg.git"
   },
   "bugs": {
-    "url": "https://github.com/saewoonam/vue-sevenseg.git"
+    "url": "https://github.com/saewoonam/vue-input-sevenseg/issues"
   },
-  "homepage": "https://github.com/saewoonam/vue-sevenseg",
+  "homepage": "https://github.com/saewoonam/vue-input-sevenseg",
   "keywords": [
     "vue",
     "vue-component",
@@ -24,17 +24,19 @@
     "sevensegment",
     "seven-segment",
     "seven segment",
-    "component"
+    "component",
+    "numeric",
+    "input"
   ],
-  "main": "dist/v-sevenseg.js",
-  "unpkg": "dist/v-sevenseg.min.js",
+  "main": "dist/v-input-sevenseg.js",
+  "unpkg": "dist/v-input-sevenseg.min.js",
   "browser": {
-    "./sfc": "src/components/VSevenseg.vue"
+    "./sfc": "src/components/VInputSevenseg.vue"
   },
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target wc --name v-sevenseg ./src/components/VSevenseg.vue",
-    "build-bundle": "vue-cli-service build --target lib --name v-sevenseg ./src/components/index.js",
+    "build": "vue-cli-service build --target wc --name v-input-sevenseg ./src/components/VInputSevenseg.vue",
+    "build-bundle": "vue-cli-service build --target lib --name v-input-sevenseg ./src/components/index.js",
     "lint": "vue-cli-service lint"
   },
   "files": [
