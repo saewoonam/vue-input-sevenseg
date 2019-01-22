@@ -35,8 +35,10 @@
   },
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target wc --name v-input-sevenseg ./src/components/VInputSevenseg.vue",
-    "build-bundle": "vue-cli-service build --target lib --name v-input-sevenseg ./src/components/index.js",
+    "build-wc": "vue-cli-service build --target wc --name v-input-sevenseg ./src/components/VInputSevenseg.vue",
+    "build-lib": "vue-cli-service build --target lib --name vInputSevenseg ./src/components/VInputSevenseg.vue",
+    "build-wrapper": "vue-cli-service build --target lib --name vInputSevenseg ./src/components/wrapper.js",
+    "build-index": "vue-cli-service build --target lib --name vInputSevenseg ./src/components/index.js",
     "lint": "vue-cli-service lint"
   },
   "files": [
