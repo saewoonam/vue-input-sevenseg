@@ -171,8 +171,22 @@ export default {
     stroke-opacity: 1;
   }
 }
+@keyframes blinkfill {
+  0% {
+    fill-opacity: 1;
+  }
+  25% {
+    fill-opacity: 0;
+  }
+  75% {
+    fill-opacity: 1;
+  }
+}
 
 .blink {
   animation: blink 0.35s infinite;
+}
+.blinkfill {
+  animation: blinkfill 0.25s infinite;
 }
 </style>
