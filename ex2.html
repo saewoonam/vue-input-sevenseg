@@ -1,0 +1,45 @@
+<meta charset="utf-8">
+<title>v-sevenseg demo</title>
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- <script src="https://unpkg.com/vue"></script> -->
+    <script src="https://unpkg.com/vue@2.5.22/dist/vue.min.js"></script>
+    <script src="./dist/vInputSevenseg.umd.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <v-input-sevenseg v-model="value1"></v-input-sevenseg>
+      <p>value1: {{ value1 }}</p>
+      <v-input-sevenseg v-model="value2" digits=10 height=60 slant=25></v-input-sevenseg>
+      <p>value2: {{ value2 }}</p>
+      <v-input-sevenseg v-model="value3"
+        digits=4
+        precision=2
+        @change="logChange(value3)"
+      >
+      </v-input-sevenseg>
+      <p>value3: {{ value3 }}</p>
+    </div>
+    <script>
+    // import VInputSevenseg from './dist/v-input-sevenseg.js'
+
+    var app = new Vue({
+      el: "#app",
+      components: {
+        'v-input-sevenseg': vInputSevenseg
+      },
+      data: {
+          value1: 1.2,
+          value2: "0.123456789",
+          value3: 0.345
+      },
+      methods: {
+        logChange: function(value) {
+          console.log("logChange:", value);
+        }
+      }
+    }).$mount('#app')
+    </script>
+  </body>
+</html>
