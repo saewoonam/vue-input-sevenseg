@@ -8,6 +8,8 @@
     tabindex="0"
     @click="mouse"
     @keydown="keydown"
+    @change="onChange"
+    @input="onInput"
   >
     <div :style="totalWidth">
       <div
@@ -16,9 +18,9 @@
         :key="index"
         :value="color.digit"
         :style="divStyle"
-        :class="{ blink: color.blink }"
       >
         <my-digit
+          :class="{ blinkfill: stepPosition == index && blink }"
           :value="color.digit"
           :dp="dp + padding == index"
           :color-on="color.on"
@@ -31,18 +33,21 @@
     </div>
     <div>
       <!-- input :value="value" v-on:input="$emit('input', $event.target.value)" /-->
-      <input
-        v-model="value"
-      >
+      <input :value="value" type="hidden" />
     </div>
   </div>
 </template>
 <script>
-import MyDigit from "./Digit.vue";
+import Digit from "./Digit.vue";
 
 export default {
+  name: "v-input-sevenseg",
   components: {
-    MyDigit
+    "my-digit": Digit
+  },
+  model: {
+    prop: "init",
+    event: "input"
   },
   props: {
     id: {
@@ -50,7 +55,7 @@ export default {
       default: "id-placeholder"
     },
     init: {
-      type: [String],
+      type: [String, Number],
       default: "1.2345"
     },
     digits: {
@@ -101,14 +106,15 @@ export default {
   data() {
     return {
       digits_orig: ["1", "2", "", "4", "5"],
-      value: 1.2345,
+      value: "1.2345",
       readonly: false,
       mult: parseFloat(this.step),
       screenPosition: this.digits, // location to insert into string/number
-      high: false,
+      blink: false,
       line: "",
       focus: false,
-      lastValid: this.value
+      lastValid: this.value,
+      hasDP: true
     };
   },
   computed: {
@@ -126,12 +132,13 @@ export default {
           digit: element,
           on: this.colorOn,
           off: this.colorOff,
-          blink: this.high,
+          blink: false,
           back: "off",
           front: "off"
         };
       });
       // console.log("attributes screenPosition, insertPosition", this.screenPosition, this.insertPosition);
+      // console.log("attributes stepPosition", this.stepPosition);
       if (this.screenPosition >= this.padding) {
         if (this.screenPosition == this.digits) {
           colors[this.screenPosition - 1].back = "on";
@@ -152,6 +159,7 @@ export default {
     raw: function() {
       // var isnum = /^-?\d*\.?\d*$/.test(this.value);
       var str;
+      // console.log("raw", this.value, typeof this.value);
       str = this.value.toString();
       // console.log('str', str, 'value', this.value);
       if (str.startsWith(".")) str = "0" + str;
@@ -203,6 +211,11 @@ export default {
       }
       // console.log('calc insert screen padding', this.screenPosition, this.padding, pos);
       return pos;
+    },
+    stepPosition: function() {
+      var pos =
+        this.dp + this.padding - Math.round(Math.log10(parseFloat(this.mult)));
+      return pos;
     }
   },
 
@@ -214,7 +227,10 @@ export default {
       handler(val) {
         if (this.value != val) {
           // console.log("copy init to value");
-          this.value = val;
+          if (typeof val == "number") this.value = val.toString();
+          else this.value = val;
+          this.hasDP = this.value.includes(".");
+          this.value = this.toPrecision(Number(this.value)).toString();
         }
       }
     }
@@ -222,6 +238,14 @@ export default {
   mounted() {
     this.$el.addEventListener("mousewheel", this.handleWheel);
     this.$el.addEventListener("wheel", this.handleWheel); // for IE
+    /*
+    console.log("this.$el", this.$el);
+    console.log("this.$el.attributes", this.$el.attributes);
+    console.log("this.$attrs", this.$attrs);
+    console.log("this.$parent", this.$parent);
+    console.log("this.$options", this.$options);
+    console.log("this.$listeners", this.$listeners)
+    */
   },
   destroyed() {
     this.$el.removeEventListener("mousewheel", this.handleWheel);
@@ -250,26 +274,47 @@ export default {
      * @param precision
      * @returns {number | Number}
      */
-    toPrecision(val) {
+    toPrecision(value) {
+      var val = value;
+      if (typeof val == "string") {
+        val = Number(val);
+      }
       return this.precision !== undefined
         ? parseFloat(val.toFixed(this.precision))
-        : val;
+        : parseFloat(val.toFixed(15));
+    },
+    /**
+     * Function to convert the numeric value to a string
+     * @value
+     *
+     */
+    toString(value) {
+      var temp = value.toString();
+      // console.log("toString, value", value, typeof value, !temp.includes("."));
+      if (this.hasDP) {
+        if (!temp.includes(".")) {
+          // console.log("add .");
+          temp += ".";
+        }
+      }
+      // console.log("toString return:", temp);
+      return temp;
     },
     /**
      * Increment the current numeric value
      */
     increment() {
       var step = this.mult * Number(this.step);
-      if (!this.readonly)
-        this.value = this.toPrecision(this.toNumber(this.value) + step);
+      this.value = this.toPrecision(this.toNumber(this.value) + step);
+      this.value = this.toString(this.value);
     },
     /**
      * Decrement the current numeric value
      */
     decrement() {
       var step = this.mult * Number(this.step);
-      if (!this.readonly)
-        this.value = this.toPrecision(this.toNumber(this.value) - step);
+      this.value = this.toPrecision(this.toNumber(this.value) - step);
+      this.value = this.toString(this.value);
     },
     /**
      *  Handle when the step multier needs to go up x10
@@ -292,7 +337,19 @@ export default {
     },
     mouse: function(event) {
       var path = event.path || (event.composedPath && event.composedPath());
-      console.log("mouse: path", path);
+      // console.log("mouse, screenPosition", this.screenPosition);
+      // console.log("mouse: path", path);
+      if (path) {
+        for (let entry of path) {
+          if ("id" in entry)
+            if ("value" in entry.attributes)
+              if (entry.nodeName == "DIV") {
+                // console.log(entry.nodeName, entry.id, this.screenPosition);
+                let temp = parseInt(entry.id) + 1;
+                if (temp >= this.padding) this.screenPosition = temp;
+              }
+        }
+      }
     },
     /**
      *  Handle mouse wheel events
@@ -321,7 +378,7 @@ export default {
         }
       } else if (evt.code == "ArrowRight") {
         this.screenPosition++;
-        console.log("ArrowRight", this.raw, this.raw.length);
+        // console.log("ArrowRight", this.raw, this.raw.length);
         if (this.screenPosition > this.digits) {
           this.screenPosition--;
         }
@@ -329,22 +386,28 @@ export default {
         if (this.screenPosition >= this.padding) {
           let temp = this.raw.slice();
           // console.log('ctrl-d', this.insertPosition, this.screenPosition);
-          temp.splice(this.insertPosition, 1);
+          let deleted = temp.splice(this.insertPosition, 1);
+          if (deleted == ".") this.hasDP = false;
           // console.log('ctrl-d', temp);
           this.value = parseFloat(temp.join(""));
+          this.value = this.toString(this.value);
           if (this.padding > 0) this.screenPosition += 1;
           addTimeout = true;
         }
       } else if (evt.code == "Backspace") {
         if (this.screenPosition > this.padding) {
           let temp = this.raw.slice();
-          // console.log('backspace', this.insertPosition, this.screenPosition);
+          // console.log('backspace before', this.insertPosition, this.screenPosition, this.padding);
           let removed = temp.splice(this.insertPosition - 1, 1);
-          // console.log('backspace', temp);
+          if (removed == ".") this.hasDP = false;
+          // console.log('backspace temp after remove', temp);
           this.value = parseFloat(temp.join(""));
-          if (removed != "." && this.screenPosition > this.padding)
+          this.value = this.toString(this.value);
+          // console.log('backspace after', this.insertPosition, this.screenPosition, this.padding);
+          if (removed != "." && this.padding == 0)
             this.screenPosition--;
           addTimeout = true;
+          // console.log('backspace after', this.insertPosition, this.screenPosition, this.padding);
         }
       }
       if (
@@ -354,16 +417,21 @@ export default {
         let temp = this.raw.slice();
         temp.splice(this.insertPosition, 0, evt.key);
         this.value = parseFloat(temp.join(""));
+        this.value = this.toString(this.value);
         addTimeout = true;
       }
       if (evt.key == "." && this.raw.indexOf(".") == -1) {
+        this.hasDP = true; // make sure we keep the decimal point
+        // console.log('insert .');
         let temp = this.raw.slice();
         temp.splice(this.insertPosition, 0, evt.key);
         this.value = parseFloat(temp.join(""));
+        this.value = this.toString(this.value);
         addTimeout = true;
       }
       switch (evt.key) {
         case "ArrowUp":
+          this.blink = true;
           if (evt.shiftKey) {
             this.multUp();
           } else {
@@ -371,6 +439,7 @@ export default {
           }
           break;
         case "ArrowDown":
+          this.blink = true;
           if (evt.shiftKey) this.multDown();
           else this.arrowDown(evt);
           break;
@@ -378,8 +447,8 @@ export default {
           break;
         case "ArrowRight":
           break;
-        default:
-          console.log('default', evt.key, evt.keyCode, evt)
+        // default:
+        //   console.log('default', evt.key, evt.keyCode, evt)
       }
       if (addTimeout) this.handleTimeout(1000);
       // console.log(this.value, typeof(this.value), this.outputValue, typeof(this.outputValue))
@@ -390,9 +459,6 @@ export default {
      */
     arrowUp: function arrowUp(evt) {
       this.increment();
-      if (evt) {
-        this.moveCursor(evt);
-      }
       this.handleTimeout(700);
     },
     /**
@@ -401,9 +467,6 @@ export default {
      */
     arrowDown: function arrowDown(evt) {
       this.decrement();
-      if (evt) {
-        this.moveCursor(evt);
-      }
       this.handleTimeout(700);
     },
     /**
@@ -415,9 +478,24 @@ export default {
       clearTimeout(this.timeout);
       this.timeout = setTimeout(() => {
         this.focus = false;
-        this.$emit('change', this.value);
+        this.blink = false;
+        this.onInput();
+        this.onChange();
         this.lastValid = this.value;
       }, delay);
+    },
+    /**
+     * On change event trigger on input
+     * @param event
+     */
+    onChange (event) {
+      // console.log('builtin onChange, id', this.id, 'event', event);
+      this.$emit("change", this.value)
+    },
+    onInput (event) {
+      // console.log("builtin on div input", this.id, 'event', event);
+      // this.$emit('input', event.target.value);
+      this.$emit("input", this.value);
     },
     moveCursor: function(evt) {
       console.log("moveCursor not implemented: evt:", evt);
@@ -453,5 +531,4 @@ export default {
   outline: 5px solid orange;
   transition: 0.2s;
 }
-
 </style>
