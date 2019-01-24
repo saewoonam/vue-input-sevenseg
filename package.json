@@ -28,8 +28,8 @@
     "numeric",
     "input"
   ],
-  "main": "dist/v-input-sevenseg.js",
-  "unpkg": "dist/v-input-sevenseg.min.js",
+  "main": "dist/vInputSevenseg.js",
+  "unpkg": "dist/vInputSevenseg.min.js",
   "browser": {
     "./sfc": "src/components/VInputSevenseg.vue"
   },
