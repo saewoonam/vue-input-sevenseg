@@ -9,8 +9,6 @@
   </head>
   <body>
     <div id="app">
-      <v-input-sevenseg v-model=10.></v-input-sevenseg>
-      <p>></p>
       <v-input-sevenseg v-model="value1"></v-input-sevenseg>
       <p>value1: {{ value1 }}</p>
       <v-input-sevenseg v-model="value2" digits=10 height=60 slant=25></v-input-sevenseg>
@@ -22,6 +20,7 @@
       >
       </v-input-sevenseg>
       <p>value3: {{ value3 }}</p>
+      <v-input-sevenseg v-model=1></v-input-sevenseg>
     </div>
     <script>
     // import VInputSevenseg from './dist/v-input-sevenseg.js'
