@@ -1,5 +1,7 @@
 <template>
   <div id="app">
+    <v-input-sevenseg v-model="1.2"></v-input-sevenseg>
+    <p></p>
     <v-input-sevenseg v-model="value1"></v-input-sevenseg>
     <br />
     <p>value1: {{ value1 }}</p>
@@ -28,7 +30,7 @@ export default {
   },
   data() {
     return {
-      value1: 1.2,
+      value1: 1,
       value2: "0.123456789",
       value3: 0.345
     };
