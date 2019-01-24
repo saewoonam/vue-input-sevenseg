@@ -1,34 +1,29 @@
-# vue-sevenseg
+# vue-input-sevenseg
 
-## A Seven Segment Display Component for Vue.js based on sevenSeg.js
+## Vue input numeric input component that uses a a Seven Segment Display
 
-## Project setup (hope this works)
+### Compile UMD javascript library that can be included in <script> on a web page
 ```
-npm install --save vue-sevenseg
-```
-
-### Compile to web component
-```
-yarn build
+yarn build-lib
 ```
 
 ### Compile example vue app that uses the component
 ```
 yarn serve
 ```
-### Compile bundle (this is not working, from medium article below)
+## Project setup (have not checked if this works)
 ```
-yarn build-bundle
+npm install --save vue-input-sevenseg
 ```
 
 ### Usage
 
-Look in the files ex1.html or ex_ff.html for firefox for examples.
+Look in the files ex1.html, ex2.html or ex_ff.html for firefox for examples.
 
-Example:
+Example of parameters for component:
 
 ```
-<v-sevenseg value=".34" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=80 digits=7 slant=10></v-sevenseg>
+<v-sevenseg model-v=".34" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=80 digits=7 slant=10></v-sevenseg>
 ```
 
 `value` or `:value`
