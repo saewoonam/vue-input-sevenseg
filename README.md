@@ -34,7 +34,7 @@ Example of parameters for component:
 - String. Default is `Red`.
 - Color when a segment is on
 
-`:color-off`
+`color-off`
 - String. Default is `rgb(50, 0, 0)`
 - Color when a segment is off
   
