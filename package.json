@@ -1,6 +1,6 @@
 {
   "name": "v-input-sevenseg",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A vue numeric input using a seven segment display inspired by Sevenseg.js from https://github.com/BrandonLWhite/sevenSeg.js",
   "author": "Sae Woo  Nam",
   "license": "MIT",

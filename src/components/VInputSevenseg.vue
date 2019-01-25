@@ -108,7 +108,7 @@ export default {
       digits_orig: ["1", "2", "", "4", "5"],
       value: "1.2345",
       readonly: false,
-      mult: parseFloat(this.step),
+      mult: 1,
       screenPosition: this.digits, // location to insert into string/number
       blink: false,
       line: "",
