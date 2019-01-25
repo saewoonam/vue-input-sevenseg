@@ -18,7 +18,10 @@ npm install --save vue-input-sevenseg
 
 ### Usage
 
-Look in the files ex1.html, ex2.html or ex_ff.html for firefox for examples.
+Use up/down arrow keys to increment value by step size\
+Use shift-up arrow or shift-down arrow to multiply or divide step size by 10\
+Use mouse wheel to increment value\
+Look in the files ex1.html, ex2.html or ex_ff.html for firefox for examples.\
 
 Example of parameters for component:
 
@@ -58,13 +61,21 @@ Example of parameters for component:
 - Number. Default is `undefined`
 - Number of digits of precision, positive number after decimal point, negative before decimal point 
 
+`step`
+- Number. Default `1`
+- Step size to increment/decrement using arrow keys or mouse wheel
+
 `slant`
 - Number. Default is 0
 - Degrees slant of the digits in the display
 
+### Things to do:
+- Add ctrl-a, ctrl-e, cut, paste support
+- Add double click support to highlight entire number
+- Add mouse selection capability to number input
 ### Caveat
 
-This is my first vue project.  Any suggestions to improve the code is welcome.
+This is my second vue project.  Any suggestions to improve the code is welcome.
 
 ### Based on code and instructions from
 
