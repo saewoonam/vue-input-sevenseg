@@ -54,6 +54,10 @@ Example of parameters for component:
 - Number. Default is `4`
 - Number of digits in the display
 
+`precision`
+- Number. Default is `undefined`
+- Number of digits of precision, positive number after decimal point, negative, before decimal point 
+
 `slant`
 - Number. Default is 0
 - Degrees slant of the digits in the display
