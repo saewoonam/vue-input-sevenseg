@@ -23,12 +23,12 @@ Look in the files ex1.html, ex2.html or ex_ff.html for firefox for examples.
 Example of parameters for component:
 
 ```
-<v-sevenseg model-v=".34" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=80 digits=7 slant=10></v-sevenseg>
+<v-input-sevenseg v-model="variable" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=80 digits=7 slant=10></v-sevenseg>
 ```
 
-`value` or `:value`
-- Any Number between 0-9 in String format. Default is "8"
-- Use `:value={myValue}` to bind `value` prop to `myValue`
+`v-model`
+- variable name, seems like it can actually be a number as well
+- Use this parameter to bind it to a javascript variable
 
 `color-on`
 - String. Default is `Red`.
