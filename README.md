@@ -83,3 +83,4 @@ This is my second vue project.  Any suggestions to improve the code is welcome.
 - <https://github.com/z0h4n/vue-seven-segment-display>
 - <https://medium.com/justfrontendthings/how-to-create-and-publish-your-own-vuejs-component-library-on-npm-using-vue-cli-28e60943eed3>
 - <https://vuejsdevelopers.com/2018/05/21/vue-js-web-component/>
+- <https://github.com/JayeshLab/vue-numeric-input>
