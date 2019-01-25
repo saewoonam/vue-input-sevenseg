@@ -56,7 +56,7 @@ Example of parameters for component:
 
 `precision`
 - Number. Default is `undefined`
-- Number of digits of precision, positive number after decimal point, negative, before decimal point 
+- Number of digits of precision, positive number after decimal point, negative before decimal point 
 
 `slant`
 - Number. Default is 0
