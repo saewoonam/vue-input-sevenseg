@@ -2,7 +2,7 @@
 
 ## Vue input numeric input component that uses a a Seven Segment Display
 
-### Compile UMD javascript library that can be included in <script> on a web page
+### Compile UMD javascript library that can be included on a web page
 ```
 yarn build-lib
 ```
