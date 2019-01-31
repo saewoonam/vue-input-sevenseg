@@ -1,48 +1,64 @@
 <template>
-  <div
-    :id="id"
-    ref="digits"
-    :style="style"
-    class="sevenseg"
-    :class="{ resize: resize, focus: focus }"
-    tabindex="0"
-    @click="mouse"
-    @keydown="keydown"
-    @change="onChange"
-    @input="onInput"
-  >
-    <div :style="totalWidth">
-      <div
-        v-for="(color, index) in attributes"
-        :id="index"
-        :key="index"
-        :value="color.digit"
-        :style="divStyle"
-      >
-        <my-digit
-          :class="{ blinkfill: stepPosition == index && blink }"
+  <div>
+    <div
+      :id="id"
+      ref="digits"
+      :style="style"
+      class="sevenseg"
+      :class="{ resize: resize, focus: focus }"
+      tabindex="0"
+      @click="mouse"
+      @keydown="keydown"
+      @change="onChange"
+      @input="onInput"
+      @paste="onPaste"
+      contenteditable="true"
+    >
+      <div :style="totalWidth">
+        <div
+          v-for="(color, index) in attributes"
+          :id="index"
+          :key="index"
           :value="color.digit"
-          :dp="dp + padding == index"
-          :color-on="color.on"
-          :color-off="colorOff"
-          :front="color.front"
-          :back="color.back"
-          :slant="slant"
-        />
+          :style="divStyle"
+        >
+          <my-digit
+            :class="{ blinkfill: stepPosition == index && blink }"
+            :value="color.digit"
+            :dp="dp + padding == index"
+            :color-on="color.on"
+            :color-off="colorOff"
+            :front="color.front"
+            :back="color.back"
+            :slant="slant"
+          />
+        </div>
+      </div>
+      <div>
+        <!-- input :value="value" v-on:input="$emit('input', $event.target.value)" /-->
+        <input :value="value" type="hidden" />
       </div>
     </div>
-    <div>
-      <!-- input :value="value" v-on:input="$emit('input', $event.target.value)" /-->
-      <input :value="value" type="hidden" />
+    <div class="arrows" :class="{focus: focus}" :style="'height: ' + (height-2) + 'px;'">
+      <div class="arrow-up" @mousedown="start(arrowUp)">
+        <v-icon name="angle-up" height="height/2"></v-icon>
+      </div>
+      <div class="arrow-down" @mousedown="start(arrowDown)">
+        <v-icon name="angle-down" height="height/2"></v-icon>
+      </div>
     </div>
   </div>
 </template>
 <script>
 import Digit from "./Digit.vue";
+import "vue-awesome/icons/angle-up";
+import "vue-awesome/icons/angle-down";
+import Icon from "vue-awesome/components/Icon";
 
 export default {
   name: "v-input-sevenseg",
   components: {
+    "v-icon": Icon,
     "my-digit": Digit
   },
   model: {
@@ -238,6 +254,7 @@ export default {
   mounted() {
     this.$el.addEventListener("mousewheel", this.handleWheel);
     this.$el.addEventListener("wheel", this.handleWheel); // for IE
+    this.$el.addEventListener("paste", this.onPaste);
     /*
     console.log("this.$el", this.$el);
     console.log("this.$el.attributes", this.$el.attributes);
@@ -250,6 +267,7 @@ export default {
   destroyed() {
     this.$el.removeEventListener("mousewheel", this.handleWheel);
     this.$el.removeEventListener("wheel", this.handleWheel); // for IE
+    this.$el.removeEventListener("paste", this.onPaste);
     // this.$el.removeEventListener("resize", this.handleResize);
   },
   methods: {
@@ -454,6 +472,34 @@ export default {
       // console.log(this.value, typeof(this.value), this.outputValue, typeof(this.outputValue))
     },
     /**
+     *  Start a repetitive call to increment and decrement method after a timeInterval on mousedown event and will stop on mouseup event on controls
+     * @param handler - increment or decrement method
+     */
+    start(handler) {
+      var timeInterval = 50;
+      document.addEventListener("mouseup", this.stop);
+      this.startTime = new Date();
+      this.handler = handler;
+      clearInterval(this.interval);
+      this.interval = setInterval(handler, timeInterval);
+    },
+    /**
+     * clear interval on mouseup event and remove the listener
+     * @param evt - event to be removed
+     */
+    stop(evt) {
+      var timeInterval = 50;
+      document.removeEventListener(evt.type, this.stop);
+      if (new Date() - this.startTime < timeInterval) {
+        this.handler();
+      }
+      clearInterval(this.interval);
+      this.interval = null;
+      this.handler = null;
+      this.startTime = null;
+      // if (this.value !== this.value) this.$emit('change', this.value)
+    },
+    /**
      *  Handle when up arrow is pressed
      *  @param evt - event that triggered calling this function
      */
@@ -488,14 +534,19 @@ export default {
      * On change event trigger on input
      * @param event
      */
-    onChange (event) {
+    onChange(event) {
       // console.log('builtin onChange, id', this.id, 'event', event);
       this.$emit("change", this.value)
     },
-    onInput (event) {
+    onInput(event) {
       // console.log("builtin on div input", this.id, 'event', event);
       // this.$emit('input', event.target.value);
       this.$emit("input", this.value);
+    },
+    onPaste(event) {
+      console.log("paste", this.id, 'event', event);
+      // this.$emit('input', event.target.value);
+      // this.$emit("input", this.value);
     },
     moveCursor: function(evt) {
       console.log("moveCursor not implemented: evt:", evt);
@@ -527,8 +578,40 @@ export default {
   overflow: auto;
 }
 
-.sevenseg.focus  {
+.sevenseg.focus {
   outline: 5px solid orange;
   transition: 0.2s;
+}
+
+.arrows.focus {
+  outline: 5px solid orange;
+  transition: 0.2s;
+}
+.arrows .arrow-up,
+.arrows .arrow-down {
+  display: block;
+  text-align: center;
+  height: 50%;
+}
+.arrows .arrow-up:hover,
+.arrows .arrow-down:hover {
+  background-color: #dadada;
+}
+.arrows .arrow-up:active,
+.arrows .arrow-down:active {
+  background-color: #cacaca;
+}
+
+.arrows {
+  background-color: #f0f0f0;
+  border: 1px solid #cacaca;
+  border-radius: 0 5px 5px 0;
+  box-shadow: rgba(10, 10, 10, 0.0980392) 0 1px 2px inset;
+  border-left: 0;
+  display: inline-block;
+  width: 2rem;
+  text-align: center;
+  vertical-align: top;
+  font-size: 1rem;
 }
 </style>
