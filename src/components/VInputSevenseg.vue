@@ -41,10 +41,10 @@
     </div>
     <div v-show="useButtons" class="arrows" :class="{focus: focus}" :style="'height: ' + (height-2) + 'px;'">
       <div class="arrow-up" @mousedown="start(arrowUp)">
-        <v-icon name="angle-up" height="height/2"></v-icon>
+        <v-icon name="angle-up" :height="arrowHeight"></v-icon>
       </div>
       <div class="arrow-down" @mousedown="start(arrowDown)">
-        <v-icon name="angle-down" height="height/2"></v-icon>
+        <v-icon name="angle-down" :height="arrowHeight"></v-icon>
       </div>
     </div>
   </div>
@@ -138,6 +138,10 @@ export default {
     };
   },
   computed: {
+    arrowHeight: function() {
+      console.log("arrowHeight", parseFloat(this.height)/2);
+      return parseFloat(this.height)/2;
+    },
     useButtons: function() {
       return this.buttons.toString() == "true";
     },

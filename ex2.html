@@ -1,11 +1,12 @@
 <meta charset="utf-8">
-<title>v-sevenseg demo</title>
+<title>v-input-sevenseg demo</title>
 <!DOCTYPE html>
 <html>
   <head>
     <!-- <script src="https://unpkg.com/vue"></script> -->
-    <script src="https://unpkg.com/vue@2.5.22/dist/vue.min.js"></script>
-    <script src="./dist/vInputSevenseg.umd.min.js"></script>
+    <!-- <script src="https://unpkg.com/vue@2.5.22/dist/vue.min.js"></script> -->
+    <script src="https://unpkg.com/vue"></script>
+    <script src="./dist/vInputSevenseg.umd.js"></script>
   </head>
   <body>
     <div id="app">
@@ -17,13 +18,12 @@
         digits=4
         precision=2
         @change="logChange(value3)"
+        buttons=false
       >
       </v-input-sevenseg>
       <p>value3: {{ value3 }}</p>
-      <v-input-sevenseg v-model=1></v-input-sevenseg>
     </div>
     <script>
-    // import VInputSevenseg from './dist/v-input-sevenseg.js'
 
     var app = new Vue({
       el: "#app",

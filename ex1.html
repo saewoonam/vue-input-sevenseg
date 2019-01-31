@@ -1,12 +1,12 @@
 <meta charset="utf-8">
-<title>v-sevenseg demo</title>
+<title>v-input-sevenseg demo</title>
 <!DOCTYPE html>
 <html>
   <head>
     <script src="https://unpkg.com/vue"></script>
     <script src="./dist/vInputSevenseg.umd.js"></script>
     <!-- <script src="https://unpkg.com/v&#45;sevenseg"></script> -->
-    <script> Vue.use(VInputSevenseg.default) </script>
+    <script> Vue.use(vInputSevenseg.default) </script>
   </head>
   <body>
     <div id="app">
@@ -19,6 +19,7 @@
         precision=2
         step=0.01
         @change="logChange(value3)"
+        buttons=false
       >
       </v-input-sevenseg>
       <p>value3: {{ value3 }}</p>
