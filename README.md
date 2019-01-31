@@ -26,7 +26,7 @@ Look in the files ex1.html, ex2.html or ex_ff.html for firefox for examples.\
 Example of parameters for component:
 
 ```
-<v-input-sevenseg v-model="variable" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=80 digits=7 slant=10></v-sevenseg>
+<v-input-sevenseg v-model="variable" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=80 digits=7 slant=10 buttons=false></v-input-sevenseg>
 ```
 
 `v-model`
@@ -68,6 +68,10 @@ Example of parameters for component:
 `slant`
 - Number. Default is 0
 - Degrees slant of the digits in the display
+
+`buttons`
+- Boolean / String. Default is true
+- Add buttons to the widget to use mouse clicks to increment / decrement the value, hold the nouse button to automatically continue to increase / decrease the number
 
 ### Things to do:
 - Add ctrl-a, ctrl-e, cut, paste support

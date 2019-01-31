@@ -39,7 +39,7 @@
         <input :value="value" type="hidden" />
       </div>
     </div>
-    <div class="arrows" :class="{focus: focus}" :style="'height: ' + (height-2) + 'px;'">
+    <div v-show="useButtons" class="arrows" :class="{focus: focus}" :style="'height: ' + (height-2) + 'px;'">
       <div class="arrow-up" @mousedown="start(arrowUp)">
         <v-icon name="angle-up" height="height/2"></v-icon>
       </div>
@@ -114,6 +114,10 @@ export default {
       type: [String, Number],
       default: 0
     },
+    buttons: {
+      type: [String, Boolean],
+      default: true
+    },
     resize: {
       type: [String, Boolean],
       default: false
@@ -134,6 +138,9 @@ export default {
     };
   },
   computed: {
+    useButtons: function() {
+      return this.buttons.toString() == "true";
+    },
     divStyle: function() {
       return (
         "display: inline-block; height: 100%; " +

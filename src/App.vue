@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <v-input-sevenseg v-model="1.2"></v-input-sevenseg>
+    <v-input-sevenseg v-model="1.2" color-on="Green"></v-input-sevenseg>
     <p></p>
-    <v-input-sevenseg v-model="value1"></v-input-sevenseg>
+    <v-input-sevenseg v-model="value1" buttons=false></v-input-sevenseg>
     <br />
     <p>value1: {{ value1 }}</p>
     <br />
